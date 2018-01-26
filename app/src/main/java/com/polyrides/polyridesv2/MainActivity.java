@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -30,23 +31,29 @@ public class MainActivity extends AppCompatActivity {
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Intent intent = new Intent(here, AppMain.class);
-                startActivity(intent);
-            }
+        if (AccessToken.getCurrentAccessToken() == null) {
+            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Intent intent = new Intent(here, AppMain.class);
+                    startActivity(intent);
+                }
 
-            @Override
-            public void onCancel() {
+                @Override
+                public void onCancel() {
 
-            }
+                }
 
-            @Override
-            public void onError(FacebookException error) {
+                @Override
+                public void onError(FacebookException error) {
 
-            }
-        });
+                }
+            });
+        }
+        else {
+            Intent intent = new Intent(here, AppMain.class);
+            startActivity(intent);
+        }
 
     }
 
