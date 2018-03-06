@@ -2,11 +2,12 @@
     <string name="app_name">PolyridesV2</string>
     <string name="facebook_app_id">494161824310804</string>
     <string name="fb_login_protocol_scheme">fb494161824310804</string>
-    <string name="title_activity_app_main">AppMain</string>
+    <string name="title_activity_app_main">PolyRidesV2</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
 </resources>

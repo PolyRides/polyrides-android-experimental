@@ -6,9 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.polyrides.polyridesv2.RideFragment.OnListFragmentInteractionListener;
+import com.polyrides.polyridesv2.NotificationsFragment.OnListFragmentInteractionListener;
 import com.polyrides.polyridesv2.dummy.DummyContent.DummyItem;
-import com.polyrides.polyridesv2.models.Ride;
+import com.polyrides.polyridesv2.dummy.DummyNotificationContent;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyRideRecyclerViewAdapter extends RecyclerView.Adapter<MyRideRecyclerViewAdapter.ViewHolder> {
+public class MyNotificationsRecyclerViewAdapter extends RecyclerView.Adapter<MyNotificationsRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Ride> mValues;
+    private final List<DummyNotificationContent.DummyNotificationItem> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyRideRecyclerViewAdapter(List<Ride> items, OnListFragmentInteractionListener listener) {
+    public MyNotificationsRecyclerViewAdapter(List<DummyNotificationContent.DummyNotificationItem> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,15 +30,15 @@ public class MyRideRecyclerViewAdapter extends RecyclerView.Adapter<MyRideRecycl
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_ride, parent, false);
+                .inflate(R.layout.fragment_notifications, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).RideName);
-        holder.mContentView.setText(mValues.get(position).RideName);
+        holder.mIdView.setText(mValues.get(position).id);
+        holder.mContentView.setText(mValues.get(position).content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +61,7 @@ public class MyRideRecyclerViewAdapter extends RecyclerView.Adapter<MyRideRecycl
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Ride mItem;
+        public DummyNotificationContent.DummyNotificationItem mItem;
 
         public ViewHolder(View view) {
             super(view);
