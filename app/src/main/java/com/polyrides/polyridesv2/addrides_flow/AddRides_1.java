@@ -1,6 +1,7 @@
 package com.polyrides.polyridesv2.addrides_flow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ public class AddRides_1 extends Fragment {
     private String mParam1;
     private String mParam2;
     private TextView tolocation;
+    private PlaceAutocompleteFragment autocompleteFragment;
 
     private OnFragmentInteractionListener mListener;
 
@@ -78,14 +80,14 @@ public class AddRides_1 extends Fragment {
 
         tolocation = (TextView) v.findViewById(R.id.toLocation);
 
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment) getActivity().
+        autocompleteFragment = (PlaceAutocompleteFragment) getActivity().
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName());
+                Log.e(TAG, "Place: " + place.getName());
 
                 String placeDetailsStr = place.getName() + "\n"
                         + place.getId() + "\n"
@@ -98,7 +100,7 @@ public class AddRides_1 extends Fragment {
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
+                Log.e(TAG, "An error occurred: " + status);
             }
         });
 
@@ -143,5 +145,11 @@ public class AddRides_1 extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        autocompleteFragment.onActivityResult(requestCode, resultCode, data);
     }
 }

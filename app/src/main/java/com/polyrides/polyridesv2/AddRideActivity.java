@@ -1,6 +1,7 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -50,5 +51,10 @@ public class AddRideActivity extends AppCompatActivity implements AddRides_1.OnF
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
