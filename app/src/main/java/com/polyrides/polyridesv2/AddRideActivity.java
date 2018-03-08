@@ -1,15 +1,26 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
-public class AddRideActivity extends AppCompatActivity {
+import com.polyrides.polyridesv2.addrides_flow.AddRides_1;
+
+import java.util.ArrayList;
+
+public class AddRideActivity extends AppCompatActivity implements AddRides_1.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,22 +28,27 @@ public class AddRideActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_ride);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//    @Override
+//    public View onCreateView(View view, String name, Context context, AttributeSet attrs) {
+//        super.onCreateView(view, name, context, attrs);
+//
+//        return view;
+//    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_add_ride, menu);
+        Drawable yourdrawable = menu.getItem(0).getIcon(); // change 0 with 1,2 ...
+        yourdrawable.mutate();
+        yourdrawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        return true;
     }
 
     @Override
-    public View onCreateView(View view, String name, Context context, AttributeSet attrs) {
+    public void onFragmentInteraction(Uri uri) {
 
-
-        return view;
     }
-
 }

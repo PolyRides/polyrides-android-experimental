@@ -3,6 +3,7 @@
     package="com.polyrides.polyridesv2">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -46,6 +47,10 @@
             android:name=".AddRideActivity"
             android:label="@string/title_activity_add_ride"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value=""/>
+
     </application>
 
 </manifest>

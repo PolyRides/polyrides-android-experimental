@@ -72,9 +72,10 @@ public class RideFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ride_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        if (view != null) {
+
+            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+            Context context = recyclerView.getContext();
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -85,11 +86,11 @@ public class RideFragment extends Fragment {
             addButton = (FloatingActionButton) view.findViewById(R.id.addBtn);
 
             addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), AddRideActivity.class);
+               @Override
+               public void onClick(View view) {
+                   Intent intent = new Intent(getActivity(), AddRideActivity.class);
                     startActivity(intent);
-                }
+              }
             });
         }
         return view;
