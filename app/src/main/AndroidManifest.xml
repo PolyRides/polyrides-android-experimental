@@ -41,7 +41,11 @@
         </activity>
         <activity
             android:name=".AppMain"
-            android:label="@string/title_activity_app_main"></activity>
+            android:label="@string/title_activity_app_main" />
+        <activity
+            android:name=".AddRideActivity"
+            android:label="@string/title_activity_add_ride"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

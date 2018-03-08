@@ -1,7 +1,9 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,6 +36,7 @@ public class RideFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private ArrayList<Ride> rides;
+    private FloatingActionButton addButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -78,6 +81,16 @@ public class RideFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             recyclerView.setAdapter(new MyRideRecyclerViewAdapter(rides, mListener));
+
+            addButton = (FloatingActionButton) view.findViewById(R.id.addBtn);
+
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), AddRideActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
         return view;
     }
