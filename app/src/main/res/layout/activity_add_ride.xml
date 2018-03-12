@@ -26,7 +26,15 @@
                 />
 
         </android.support.design.widget.AppBarLayout>
-        <include layout="@layout/fragment_add_rides_1" />
+        <fragment
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Start Location"
+            android:background="#fff"
+            android:name="com.polyrides.polyridesv2.addrides_flow.AddRides_1"
+            />
+
     </LinearLayout>
 
 

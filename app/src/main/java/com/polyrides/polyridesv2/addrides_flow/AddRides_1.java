@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.polyrides.polyridesv2.R;
 
 import static android.content.ContentValues.TAG;
@@ -37,7 +38,7 @@ public class AddRides_1 extends Fragment {
     private String mParam1;
     private String mParam2;
     private TextView tolocation;
-    private PlaceAutocompleteFragment autocompleteFragment;
+    private SupportPlaceAutocompleteFragment autocompleteFragment;
 
     private OnFragmentInteractionListener mListener;
 
@@ -80,8 +81,8 @@ public class AddRides_1 extends Fragment {
 
         tolocation = (TextView) v.findViewById(R.id.toLocation);
 
-        autocompleteFragment = (PlaceAutocompleteFragment) getActivity().
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment = (SupportPlaceAutocompleteFragment)
+                getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override

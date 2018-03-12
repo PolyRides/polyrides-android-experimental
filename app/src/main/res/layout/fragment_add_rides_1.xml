@@ -12,24 +12,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="To"
+        android:textStyle="bold"
+        android:textSize="18sp"
         android:layout_margin="10dp"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Where are you going?"
+        android:layout_margin="10dp"/>
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Start Location"
+        android:background="#fff"
+        android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
+        />
 
     <TextView
         android:id="@+id/toLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="To"
+        android:layout_margin="10dp"
         android:layout_marginBottom="20dp"/>
 
-
-        <fragment
-            android:id="@+id/place_autocomplete_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter Start Location"
-            android:background="#fff"
-            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-            />
 
 
 
