@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polyrides.polyridesv2.AddRideActivity">
+    tools:context="com.polyrides.polyridesv2.AddRideOfferActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:hint="Enter Start Location"
             android:background="#fff"
-            android:name="com.polyrides.polyridesv2.addrides_flow.AddRides_1"
+            android:name="com.polyrides.polyridesv2.addrides_flow.offers.AddRides_1"
             />
 
     </LinearLayout>

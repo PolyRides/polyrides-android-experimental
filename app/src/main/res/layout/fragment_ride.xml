@@ -14,33 +14,33 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
+            android:padding="10dp"
             >
 
-            <ImageView
+
+
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/person_photo"
-                android:layout_alignParentLeft="true"
+                android:id="@+id/fromText"
+                android:drawableStart="@drawable/ic_arrow_back_black_24dp"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="16dp"
+                android:textSize="18sp"
+                android:drawableTint="@color/colorPrimary"
+                android:drawablePadding="5dp"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/id"
-                android:layout_toRightOf="@+id/person_photo"
-                android:layout_alignParentTop="true"
-                android:textSize="30sp"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/content"
-                android:layout_toRightOf="@+id/person_photo"
-                android:layout_below="@+id/id"
+                android:id="@+id/toText"
+                android:drawableStart="@drawable/ic_arrow_forward_black_24dp"
+                android:drawableTint="@color/colorPrimary"
+                android:layout_marginTop="16dp"
+                android:textSize="18sp"
+                android:layout_below="@+id/fromText"
+                android:drawablePadding="5dp"
                 />
 
         </RelativeLayout>

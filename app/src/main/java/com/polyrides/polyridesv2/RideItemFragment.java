@@ -13,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,11 +26,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.polyrides.polyridesv2.models.Ride;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.polyrides.polyridesv2.models.RideOffer;
 
 import org.w3c.dom.Text;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -44,7 +51,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private Ride ride;
+    private RideOffer ride;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -53,6 +60,9 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
     private TextView description;
     private boolean blockScroll = false;
     private NestedScrollView nestedScrollView;
+    private TextView ridesAvailable;
+    private Button offerButton;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,7 +70,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
-    public static RideItemFragment newInstance(Ride ride) {
+    public static RideItemFragment newInstance(RideOffer ride) {
         RideItemFragment fragment = new RideItemFragment();
         Bundle args = new Bundle();
         args.putParcelable("ride", ride);
@@ -82,14 +92,41 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ride_item, container, false);
 
+
+
         fromLocation = (TextView) view.findViewById(R.id.fromlocation);
         toLocation = (TextView) view.findViewById(R.id.tolocation);
         description = (TextView) view.findViewById(R.id.ridedesc);
         nestedScrollView = (NestedScrollView) view.findViewById(R.id.ridedescview);
+        ridesAvailable = (TextView) view.findViewById(R.id.spotsAvailable);
+        offerButton = (Button) view.findViewById(R.id.offerBtn);
 
-        fromLocation.setText(ride.EndLocation);
-        toLocation.setText(ride.StartLocation);
-        description.setText(ride.Description);
+        offerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String key = mDatabase.child("seatRequests").push().getKey();
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("offerId", ride.uid);
+                data.put("riderId", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                data.put("driverId", ride.driverId);
+
+                ridesAvailable.setText("Seats Available: " + ride.seats);
+
+                Map<String, Object> rideSetup = new HashMap<>();
+                rideSetup.put("/seatRequests/" + key, data);
+
+                mDatabase.updateChildren(rideSetup);
+
+                Toast t = Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT);
+                t.show();
+            }
+        });
+
+        fromLocation.setText(ride.origin);
+        toLocation.setText(ride.destination);
+        description.setText(ride.description);
+        ridesAvailable.setText("Rides Available: " + ride.seats);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
@@ -124,8 +161,8 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng v = getLocationFromAddress(ride.StartLocation);
-        LatLng v2 = getLocationFromAddress(ride.EndLocation);
+        LatLng v = getLocationFromAddress(ride.origin);
+        LatLng v2 = getLocationFromAddress(ride.destination);
         googleMap.addMarker(new MarkerOptions().position(v).title("Start").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         googleMap.addMarker(new MarkerOptions().position(v2).title("End").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 

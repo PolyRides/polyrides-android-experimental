@@ -2,6 +2,7 @@ package com.polyrides.polyridesv2;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.polyrides.polyridesv2.dummy.DummyContent;
 import com.polyrides.polyridesv2.dummy.DummyContent.DummyItem;
 import com.polyrides.polyridesv2.dummy.DummyNotificationContent;
+import com.polyrides.polyridesv2.dummy.NotificationsRecyclerViewHolder;
+import com.polyrides.polyridesv2.models.SeatRequest;
 
 import java.util.List;
 
@@ -29,6 +37,7 @@ public class NotificationsFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private FirebaseRecyclerAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -61,6 +70,35 @@ public class NotificationsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notifications_list, container, false);
 
+        getActivity().setTitle("Notifications");
+        Query query = FirebaseDatabase.getInstance().getReference().child("seatRequests");
+
+        FirebaseRecyclerOptions<SeatRequest> options = new FirebaseRecyclerOptions.Builder<SeatRequest>().setQuery(query, SeatRequest.class).build();
+
+        mAdapter = new FirebaseRecyclerAdapter<SeatRequest, NotificationsRecyclerViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final NotificationsRecyclerViewHolder holder, int position, @NonNull SeatRequest model) {
+                holder.request = model;
+                holder.requestData.setText("test");
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (null != mListener) {
+                            mListener.onListFragmentInteraction(holder.request);
+                        }
+                    }
+                });
+
+            }
+
+            @NonNull
+            @Override
+            public NotificationsRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                return null;
+            }
+        };
+
+
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -70,7 +108,7 @@ public class NotificationsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyNotificationsRecyclerViewAdapter(DummyNotificationContent.ITEMS, mListener));
+            recyclerView.setAdapter(mAdapter);
         }
         return view;
     }
@@ -105,6 +143,6 @@ public class NotificationsFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyNotificationContent.DummyNotificationItem item);
+        void onListFragmentInteraction(SeatRequest item);
     }
 }

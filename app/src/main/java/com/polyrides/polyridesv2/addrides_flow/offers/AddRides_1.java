@@ -1,21 +1,23 @@
-package com.polyrides.polyridesv2.addrides_flow;
+package com.polyrides.polyridesv2.addrides_flow.offers;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.R;
 
 import static android.content.ContentValues.TAG;
@@ -39,6 +41,7 @@ public class AddRides_1 extends Fragment {
     private String mParam2;
     private TextView tolocation;
     private SupportPlaceAutocompleteFragment autocompleteFragment;
+    private Button nextButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,8 +79,12 @@ public class AddRides_1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivity().setTitle("Add a Ride Offer");
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_add_rides_1, container, false);
+
+        nextButton = (Button) v.findViewById(R.id.nextButton);
 
         tolocation = (TextView) v.findViewById(R.id.toLocation);
 
@@ -90,12 +97,17 @@ public class AddRides_1 extends Fragment {
                 // TODO: Get info about the selected place.
                 Log.e(TAG, "Place: " + place.getName());
 
-                String placeDetailsStr = place.getName() + "\n"
-                        + place.getId() + "\n"
-                        + place.getLatLng().toString() + "\n"
-                        + place.getAddress() + "\n"
-                        + place.getAttributions();
+                String placeDetailsStr = place.getAddress().toString();
                 tolocation.setText(placeDetailsStr);
+
+
+                AddRideOfferActivity activity = (AddRideOfferActivity) getActivity();
+
+                activity.setOrigin(place.getAddress().toString());
+                activity.setOriginLat(place.getLatLng().latitude);
+                activity.setOriginLon(place.getLatLng().longitude);
+
+                nextButton.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -105,6 +117,15 @@ public class AddRides_1 extends Fragment {
             }
         });
 
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment f = AddRides_2.newInstance("", "");
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.container, f);
+                ft.commit();
+            }
+        });
 
         return v;
     }
