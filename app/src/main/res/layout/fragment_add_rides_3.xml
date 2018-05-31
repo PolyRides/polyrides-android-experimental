@@ -16,6 +16,26 @@
         android:textSize="18sp"
         android:layout_margin="10dp"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="When does this ride start?" />
+
+
+    <EditText
+        android:id="@+id/dateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/timeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="time" />
 
     <TextView
         android:layout_width="match_parent"
@@ -29,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:layout_marginHorizontal="10dp"
         android:inputType="number" />
 
     <TextView
@@ -43,6 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:layout_marginHorizontal="10dp"
         android:inputType="textMultiLine" />
 
     <TextView
@@ -57,6 +79,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:layout_marginHorizontal="10dp"
         android:inputType="number" />
 
     <Button
@@ -66,6 +89,8 @@
         android:layout_height="wrap_content"
         android:text="next"
         android:visibility="visible" />
+
+
 
 
 </LinearLayout>

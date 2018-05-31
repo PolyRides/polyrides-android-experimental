@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.AddRideRequestActivity;
 import com.polyrides.polyridesv2.AppMain;
@@ -72,7 +73,7 @@ public class AddRideRequest_4 extends Fragment {
         // Inflate the layout for this fragment
 
         AddRideRequestActivity a = (AddRideRequestActivity) getActivity();
-
+        a.setRiderId(FirebaseAuth.getInstance().getCurrentUser().getUid());
         a.SendOfferToFirebase();
 
         Runnable r = new Runnable() {
@@ -80,7 +81,9 @@ public class AddRideRequest_4 extends Fragment {
             @Override
             public void run() {
                 // if you are redirecting from a fragment then use getActivity() as the context.
-                startActivity(new Intent(getActivity(), AppMain.class));
+                Intent intent = new Intent(getActivity(), AppMain.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
 
             }
         };

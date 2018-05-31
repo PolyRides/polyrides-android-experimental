@@ -62,6 +62,7 @@ public class AddRideRequestActivity extends AppCompatActivity implements AddRide
         data.put("cost", cost);
         data.put("uid", key);
         data.put("description", description);
+        data.put("riderId", riderId);
 
         Map<String,Object> endpoints = new HashMap<String, Object>();
         endpoints.put("/rideRequests/" + key, data);
@@ -86,6 +87,11 @@ public class AddRideRequestActivity extends AppCompatActivity implements AddRide
     private Double cost;
     private String uid;
     private String description;
+    private String riderId;
+
+    public String getRiderId() {return riderId; }
+
+    public void setRiderId(String riderId) { this.riderId = riderId; }
 
     public String getOrigin() {
         return origin;

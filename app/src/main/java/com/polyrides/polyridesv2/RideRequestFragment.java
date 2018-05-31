@@ -19,8 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.polyrides.polyridesv2.dummy.MyRideRecyclerViewHolder;
+import com.polyrides.polyridesv2.dummy.MyRideRequestRecyclerViewHolder;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
+import com.polyrides.polyridesv2.models.RideRequest;
 
 import java.util.ArrayList;
 
@@ -77,11 +79,11 @@ public class RideRequestFragment extends Fragment {
         getActivity().setTitle("Ride Requests");
 
         Query query = FirebaseDatabase.getInstance().getReference().child("rideRequests");
-        FirebaseRecyclerOptions<RideOffer> options = new FirebaseRecyclerOptions.Builder<RideOffer>().setQuery(query, RideOffer.class).build();
-        FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<RideOffer, MyRideRecyclerViewHolder>(options) {
+        FirebaseRecyclerOptions<RideRequest> options = new FirebaseRecyclerOptions.Builder<RideRequest>().setQuery(query, RideRequest.class).build();
+        FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<RideRequest, MyRideRequestRecyclerViewHolder>(options) {
 
             @Override
-            protected void onBindViewHolder(@NonNull final MyRideRecyclerViewHolder holder, int position, @NonNull RideOffer model) {
+            protected void onBindViewHolder(@NonNull final MyRideRequestRecyclerViewHolder holder, int position, @NonNull RideRequest model) {
                 holder.mItem = model;
                 holder.toText.setText(model.destination);
                 holder.fromText.setText(model.origin);
@@ -100,10 +102,10 @@ public class RideRequestFragment extends Fragment {
 
             @NonNull
             @Override
-            public MyRideRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public MyRideRequestRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.fragment_ride, parent, false);
-                return new MyRideRecyclerViewHolder(view);
+                return new MyRideRequestRecyclerViewHolder(view);
             }
         };
 
@@ -170,6 +172,6 @@ public class RideRequestFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(RideOffer item);
+        void onListFragmentInteraction(RideRequest item);
     }
 }

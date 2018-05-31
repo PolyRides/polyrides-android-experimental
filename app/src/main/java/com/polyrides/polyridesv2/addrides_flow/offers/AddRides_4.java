@@ -78,8 +78,9 @@ public class AddRides_4 extends Fragment {
 
             @Override
             public void run() {
-                // if you are redirecting from a fragment then use getActivity() as the context.
-                startActivity(new Intent(getActivity(), AppMain.class));
+                Intent intent = new Intent(getActivity(), AppMain.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
 
             }
         };

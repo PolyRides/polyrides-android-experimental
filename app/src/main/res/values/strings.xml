@@ -13,4 +13,6 @@
     <string name="title_activity_add_ride">Add a Ride</string>
     <string name="login_failed_text">Login failed.</string>
     <string name="ride_offers_text">Ride Offers</string>
+    <string name="edit_ride">Edit Ride</string>
+    <string name="delete_ride">Delete Ride</string>
 </resources>

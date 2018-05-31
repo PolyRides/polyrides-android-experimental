@@ -10,9 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.polyrides.polyridesv2.dummy.*;
+import com.google.firebase.auth.FirebaseAuth;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
+import com.polyrides.polyridesv2.models.RideRequest;
 import com.polyrides.polyridesv2.models.SeatRequest;
 
 import java.util.ArrayList;
@@ -21,15 +22,19 @@ import java.util.List;
 
 public class AppMain extends AppCompatActivity implements
         RideOfferFragment.OnListFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener,
+        ProfileFragment.OnFragmentInteractionListener,
         DashFragment.OnFragmentInteractionListener,
         NotificationsFragment.OnListFragmentInteractionListener,
         RideItemFragment.OnFragmentInteractionListener,
-        RideRequestFragment.OnListFragmentInteractionListener {
+        RideRequestFragment.OnListFragmentInteractionListener,
+        EditRideOfferFragment.OnFragmentInteractionListener,
+        RideRequestItemFragment.OnFragmentInteractionListener,
+        EditRideRequestFragment.OnFragmentInteractionListener {
 
     private List<Ride> rides = new ArrayList<>();
     private TextView mTextMessage;
     private String UserName = "";
+    private String userUid = "";
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -61,7 +66,7 @@ public class AppMain extends AppCompatActivity implements
                     break;
                 case R.id.navigation_account:
                     try {
-                        fragment = (Fragment) SettingsFragment.newInstance(UserName, "none");
+                        fragment = (Fragment) ProfileFragment.newInstance(userUid);
                     } catch (Exception e) {
                         fragment = null;
                     }
@@ -80,6 +85,8 @@ public class AppMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_main2);
 
+        userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -87,27 +94,6 @@ public class AppMain extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, fragment, "RIDE_FRAGMENT").commit();
 
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl("https://mo9se82md9.execute-api.us-west-2.amazonaws.com")
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        RideService rideService = retrofit.create(RideService.class);
-//        Call<List<Ride>> rideCall = rideService.listRides();
-//        rideCall.enqueue(new Callback<List<Ride>>() {
-//            @Override
-//            public void onResponse(Call<List<Ride>> call, Response<List<Ride>> response) {
-//                rides = response.body();
-//                Fragment fragment = RideOfferFragment.newInstance((ArrayList) rides);
-//                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//                ft.replace(R.id.container, fragment, "RIDE_FRAGMENT").commit();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Ride>> call, Throwable t) {
-//                rides = new ArrayList<>();
-//            }
-//        });
     }
 
     @Override
@@ -126,8 +112,10 @@ public class AppMain extends AppCompatActivity implements
     }
 
     @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
+    public void onListFragmentInteraction(RideRequest item) {
+            Fragment fragment = RideRequestItemFragment.newInstance(item);
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container, fragment).addToBackStack("drilldownrides").commit();
     }
 
     @Override

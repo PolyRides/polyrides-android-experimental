@@ -81,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
                 usersReference.updateChildren(endpoints);
 
                 // Successfully signed in
-                startActivity(new Intent(this, AppMain.class));
+                Intent intent = new Intent(this, AppMain.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 // ...
             } else {
                 Toast toast = new Toast(this);

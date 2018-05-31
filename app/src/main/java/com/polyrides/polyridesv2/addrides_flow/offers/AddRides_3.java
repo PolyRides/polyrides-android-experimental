@@ -14,6 +14,10 @@ import android.widget.EditText;
 import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -36,6 +40,8 @@ public class AddRides_3 extends Fragment {
     private EditText descText;
     private EditText costText;
     private Button nextButton;
+    private EditText dateText;
+    private EditText timeText;
 
     private OnFragmentInteractionListener mListener;
 
@@ -80,10 +86,25 @@ public class AddRides_3 extends Fragment {
         descText = (EditText) v.findViewById(R.id.descText);
         costText = (EditText) v.findViewById(R.id.costText);
         nextButton = (Button) v.findViewById(R.id.nextButton);
+        dateText = v.findViewById(R.id.dateText);
+        timeText = v.findViewById(R.id.timeText);
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String time = timeText.getText().toString();
+                String date = dateText.getText().toString();
+
+                String res = date + " " + time;
+                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy h:mmaa");
+                Date d = null;
+                try {
+                    d = formatter.parse(res);
+                }
+                catch (Exception e ) {
+
+                }
 
                 AddRideOfferActivity a = (AddRideOfferActivity) getActivity();
 

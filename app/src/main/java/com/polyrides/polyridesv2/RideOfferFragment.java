@@ -102,6 +102,8 @@ public class RideOfferFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivity().setTitle("Ride Offers");
         View view = inflater.inflate(R.layout.fragment_ride_list, container, false);
 
         getActivity().setTitle(R.string.ride_offers_text);

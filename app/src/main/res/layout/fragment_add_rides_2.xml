@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="To"
+        android:text="From"
         android:textStyle="bold"
         android:textSize="18sp"
         android:layout_margin="10dp"/>
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Where are you going?"
+        android:text="Where are leaving from?"
         android:layout_margin="10dp"/>
     <fragment
         android:id="@+id/place_autocomplete_fragment"

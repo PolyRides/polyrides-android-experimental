@@ -1,0 +1,273 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="48dp"
+    tools:context="com.polyrides.polyridesv2.RideRequestItemFragment">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/main.appbar"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true"
+        >
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/main.collapsing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginStart="48dp"
+            app:expandedTitleMarginEnd="64dp"
+            >
+            <include layout="@layout/fragment_smallmap"/>
+
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="58dp"
+        android:scrollbars="none"
+        app:behavior_overlapTop="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/ridedescview"
+        >
+
+        <LinearLayout
+            android:id="@+id/cardcontent"
+            android:orientation="vertical"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp"
+                >
+
+                <LinearLayout
+                    android:id="@+id/tofromcontent"
+                    android:orientation="vertical"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginRight="5dp"
+                            android:lineSpacingExtra="8dp"
+                            android:text="TO"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_weight="2"/>
+
+                        <TextView
+                            android:id="@+id/tolocation"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:lineSpacingExtra="8dp"
+                            android:text=""
+                            android:textSize="18sp"
+                            android:layout_weight="8"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="2"
+                            android:lineSpacingExtra="8dp"
+                            android:text="FROM"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/fromlocation"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="8dp"
+                            android:text=""
+                            android:textSize="18sp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_weight="8"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginRight="5dp"
+                        android:lineSpacingExtra="8dp"
+                        android:text="DESCRIPTION"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_weight="2"/>
+                    <TextView
+                        android:id="@+id/ridedesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="8dp"
+                        android:text=""
+                        android:textSize="18sp"
+                        />
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp"
+                android:visibility="gone"
+                android:id="@+id/requestorCard"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:id="@+id/requestorLayout">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginRight="5dp"
+                        android:lineSpacingExtra="8dp"
+                        android:text="REQUESTOR PROFILE"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_weight="2"/>
+
+                    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_margin="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/requestorImgView"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentLeft="true" />
+
+                        <TextView
+                            android:id="@+id/requestorName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_alignTop="@+id/requestorImgView"
+                            android:layout_toRightOf="@+id/requestorImgView"
+                            android:layout_marginTop="1dp"
+                            android:layout_marginLeft="18dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_toEndOf="@+id/requestorImgView" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp"
+                android:id="@+id/riderActionsCard"
+                android:visibility="gone"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:id="@+id/riderActionsLayout">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginRight="5dp"
+                        android:lineSpacingExtra="8dp"
+                        android:text="REQUESTOR ACTIONS"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_weight="2"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/editBtn"
+                        android:text="@string/edit_ride"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/deleteBtn"
+                        android:text="@string/delete_ride"/>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_gravity="bottom|right"
+        app:layout_anchorGravity="bottom|right|end"
+        android:layout_marginEnd="16sp"
+        android:elevation="8dp"
+        android:layout_marginBottom="75sp"
+        android:layout_width="wrap_content"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_chat_black_24dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/addBtn"/>
+</android.support.design.widget.CoordinatorLayout>
+
