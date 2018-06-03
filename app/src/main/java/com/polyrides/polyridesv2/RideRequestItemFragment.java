@@ -172,6 +172,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
             public void onClick(View v) {
                 Fragment f = EditRideRequestFragment.newInstance(ride);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.addToBackStack(null);
                 transaction.replace(R.id.container, f);
                 transaction.commit();
             }

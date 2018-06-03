@@ -12,11 +12,6 @@
         android:title="@string/title_dashboard" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_chat_black_24dp"
-        android:title="@string/title_notifications" />
-
-    <item
         android:id="@+id/navigation_account"
         android:icon="@drawable/ic_account_circle_black_24dp"
         android:title="@string/account" />

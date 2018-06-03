@@ -160,26 +160,72 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        leaveRideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                ride.riderIds.remove(uid);
+                ride.seats++;
+
+                Map<String, Object> setupRiders = new HashMap<>();
+                setupRiders.put("/rideOffers/" + ride.uid + "/riderIds", ride.riderIds);
+
+                Map<String, Object> setupSeats = new HashMap<>();
+                setupSeats.put("/rideOffers/" + ride.uid + "/seats", ride.seats);
+
+                mDatabase.updateChildren(setupRiders);
+                mDatabase.updateChildren(setupSeats);
+
+                Toast t = Toast.makeText(getContext(), "You have been removed.", Toast.LENGTH_SHORT);
+                ridesAvailable.setText("Rides Available: " + ride.seats);
+                t.show();
+
+                riderNotAddedLayout.setVisibility(View.VISIBLE);
+                riderAddedLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+
+            }
+        });
+
 
         offerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String key = mDatabase.child("seatRequests").push().getKey();
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("offerId", ride.uid);
-                data.put("riderId", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                data.put("driverId", ride.driverId);
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                ridesAvailable.setText("Seats Available: " + ride.seats);
+                if (ride.seats <= 0 || ride.riderIds.contains(uid)) {
+                    Toast t = Toast.makeText(getContext(), "This ride has no more seats available.", Toast.LENGTH_SHORT);
+                    t.show();
+                }
+                else if (ride.riderIds.contains(uid)) {
+                    Toast t = Toast.makeText(getContext(), "You've already joined this ride.", Toast.LENGTH_SHORT);
+                    t.show();
+                }
+                else {
+                    if (ride.riderIds == null) {
+                        ride.riderIds = new ArrayList<>();
+                    }
 
-                Map<String, Object> rideSetup = new HashMap<>();
-                rideSetup.put("/seatRequests/" + key, data);
+                    ride.riderIds.add(uid);
+                    ride.seats--;
 
-                mDatabase.updateChildren(rideSetup);
+                    Map<String, Object> setupRiders = new HashMap<>();
+                    setupRiders.put("/rideOffers/" + ride.uid + "/riderIds", ride.riderIds);
 
-                Toast t = Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT);
-                t.show();
+                    Map<String, Object> setupSeats = new HashMap<>();
+                    setupSeats.put("/rideOffers/" + ride.uid + "/seats", ride.seats);
+
+                    mDatabase.updateChildren(setupRiders);
+                    mDatabase.updateChildren(setupSeats);
+
+                    Toast t = Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT);
+                    ridesAvailable.setText("Rides Available: " + ride.seats);
+                    t.show();
+
+                    riderAddedLayout.setVisibility(View.VISIBLE);
+                    riderNotAddedLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+                }
             }
         });
 
@@ -199,6 +245,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
                     Fragment f = EditRideOfferFragment.newInstance(ride);
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
                     ft.replace(R.id.container,f).commit();
                 }
             });
@@ -219,7 +266,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
 
-            driverCard.setVisibility(View.VISIBLE);
+            //driverCard.setVisibility(View.VISIBLE);
             //driverLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
         }
         else {
@@ -227,7 +274,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
             driverActionsCard.setLayoutParams(new LinearLayout.LayoutParams(0,0));
             riderActionsCard.setVisibility(View.VISIBLE);
 
-            if (ride.riderIds.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+            if (ride.riderIds != null && ride.riderIds.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 riderAddedLayout.setVisibility(View.VISIBLE);
                 riderNotAddedLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
             }

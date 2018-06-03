@@ -57,13 +57,6 @@ public class AppMain extends AppCompatActivity implements
                         fragment = null;
                     }
                     break;
-                case R.id.navigation_notifications:
-                    try {
-                        fragment = NotificationsFragment.newInstance(1);
-                    } catch (Exception e) {
-                        fragment = null;
-                    }
-                    break;
                 case R.id.navigation_account:
                     try {
                         fragment = (Fragment) ProfileFragment.newInstance(userUid);
@@ -92,6 +85,7 @@ public class AppMain extends AppCompatActivity implements
 
         Fragment fragment = RideOfferFragment.newInstance(null);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
         ft.replace(R.id.container, fragment, "RIDE_FRAGMENT").commit();
 
     }
