@@ -135,7 +135,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
         driverImageView = view.findViewById(R.id.driverImgView);
         driverCard = view.findViewById(R.id.driverCard);
 
-        driverReference = FirebaseDatabase.getInstance().getReference("users/" + ride.driverId);
+        driverReference = FirebaseDatabase.getInstance().getReference("Profile/" + ride.driverId);
 
         driverReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -144,7 +144,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
                 String userProfileImg = thisUser.getPhoto();
 
-                driverName.setText(thisUser.getName());
+                driverName.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
 
                 if (userProfileImg != null) {
                     new ImageDownloaderTask(driverImageView).doInBackground(userProfileImg);
@@ -169,10 +169,10 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                 ride.seats++;
 
                 Map<String, Object> setupRiders = new HashMap<>();
-                setupRiders.put("/rideOffers/" + ride.uid + "/riderIds", ride.riderIds);
+                setupRiders.put("/RideOffer/" + ride.uid + "/riderIds", ride.riderIds);
 
                 Map<String, Object> setupSeats = new HashMap<>();
-                setupSeats.put("/rideOffers/" + ride.uid + "/seats", ride.seats);
+                setupSeats.put("/RideOffer/" + ride.uid + "/seats", ride.seats);
 
                 mDatabase.updateChildren(setupRiders);
                 mDatabase.updateChildren(setupSeats);
@@ -194,7 +194,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                if (ride.seats <= 0 || ride.riderIds.contains(uid)) {
+                if (ride.seats <= 0 || (ride.riderIds != null && ride.riderIds.contains(uid))) {
                     Toast t = Toast.makeText(getContext(), "This ride has no more seats available.", Toast.LENGTH_SHORT);
                     t.show();
                 }
@@ -211,10 +211,10 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                     ride.seats--;
 
                     Map<String, Object> setupRiders = new HashMap<>();
-                    setupRiders.put("/rideOffers/" + ride.uid + "/riderIds", ride.riderIds);
+                    setupRiders.put("/RideOffer/" + ride.uid + "/riderIds", ride.riderIds);
 
                     Map<String, Object> setupSeats = new HashMap<>();
-                    setupSeats.put("/rideOffers/" + ride.uid + "/seats", ride.seats);
+                    setupSeats.put("/RideOffer/" + ride.uid + "/seats", ride.seats);
 
                     mDatabase.updateChildren(setupRiders);
                     mDatabase.updateChildren(setupSeats);
@@ -257,7 +257,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                     Toast t = Toast.makeText(getContext(), "Ride Deleted", Toast.LENGTH_LONG);
                     t.show();
 
-                    mDatabase.child("rideOffers").child(ride.uid).removeValue();
+                    mDatabase.child("RideOffer").child(ride.uid).removeValue();
 
                     Fragment f = RideOfferFragment.newInstance(new ArrayList<Ride>());
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();

@@ -78,7 +78,7 @@ public class RideRequestFragment extends Fragment {
 
         getActivity().setTitle("Ride Requests");
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("rideRequests");
+        Query query = FirebaseDatabase.getInstance().getReference().child("RideRequest");
         FirebaseRecyclerOptions<RideRequest> options = new FirebaseRecyclerOptions.Builder<RideRequest>().setQuery(query, RideRequest.class).build();
         FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<RideRequest, MyRideRequestRecyclerViewHolder>(options) {
 

@@ -6,14 +6,13 @@ import com.google.firebase.database.IgnoreExtraProperties;
 public class AppUser {
 
     private String uid;
-    private String name;
-    private String email;
+    private String firstName;
+    private String lastName;
+    private String emailAddress;
     private String photo;
     private String phone;
-
-    public AppUser() {
-
-    }
+    private String profileDescription;
+    private String deviceToken;
 
     public String getUid() {
         return uid;
@@ -23,20 +22,28 @@ public class AppUser {
         this.uid = uid;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public String getPhoto() {
@@ -54,5 +61,29 @@ public class AppUser {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public String getProfileDescription() {
+        return profileDescription;
+    }
+
+    public void setProfileDescription(String profileDescription) {
+        this.profileDescription = profileDescription;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+
+
+    public AppUser() {
+
+    }
+
+
 
 }

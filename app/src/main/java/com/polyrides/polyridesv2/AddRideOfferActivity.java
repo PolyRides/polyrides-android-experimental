@@ -43,7 +43,7 @@ public class AddRideOfferActivity extends AppCompatActivity implements AddRides_
     }
 
     public void SendOfferToFirebase() {
-        String key = mDatabase.child("rideOffers").push().getKey();
+        String key = mDatabase.child("RideOffer").push().getKey();
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("origin", origin);
@@ -55,12 +55,12 @@ public class AddRideOfferActivity extends AppCompatActivity implements AddRides_
         data.put("departureDate", departureDate);
         data.put("driverId", FirebaseAuth.getInstance().getCurrentUser().getUid());
         data.put("uid", key);
-        data.put("description", description);
+        data.put("rideDescription", description);
         data.put("seats", seats);
         data.put("cost", cost);
 
         Map<String,Object> endpoints = new HashMap<String, Object>();
-        endpoints.put("/rideOffers/" + key, data);
+        endpoints.put("/RideOffer/" + key, data);
 
         mDatabase.updateChildren(endpoints);
     }

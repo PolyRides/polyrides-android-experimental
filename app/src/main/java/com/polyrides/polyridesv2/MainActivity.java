@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,14 +68,28 @@ public class MainActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
 
-                usersReference = usersReference.child("users");
+                usersReference = usersReference.child("Profile");
+
+                String firstName;
+                String lastName = "";
+                if (FirebaseAuth.getInstance().getCurrentUser().getDisplayName().split(" ").length != 2) {
+                    firstName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                }
+                else {
+                    firstName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName().split(" ")[0];
+                    lastName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName().split(" ")[1];
+                }
 
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                userData.put("name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                userData.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                userData.put("firstName", firstName);
+                userData.put("lastName", lastName);
+                userData.put("emailAddress", FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 userData.put("photo", FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
                 userData.put("phone", FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+                userData.put("profileDescription", "");
+                userData.put("deviceToken", FirebaseInstanceId.getInstance().getToken());
+                userData.put("rating", 0);
 
                 Map<String, Object> endpoints = new HashMap<>();
                 endpoints.put(FirebaseAuth.getInstance().getCurrentUser().getUid(), userData);
@@ -84,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, AppMain.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                // ...
+
             } else {
                 Toast toast = new Toast(this);
                 toast.setText(R.string.login_failed_text);

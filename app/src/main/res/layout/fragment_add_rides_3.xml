@@ -22,20 +22,40 @@
         android:layout_margin="10dp"
         android:text="When does this ride start?" />
 
-
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/dateText"
-        android:layout_width="match_parent"
+        android:width="250dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"/>
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="date" />
-
+        android:text="SELECT A DATE"
+        android:id="@+id/dateButton"
+        android:layout_alignBottom="@id/dateText"
+        android:layout_toEndOf="@id/dateText"/>
     <EditText
-        android:id="@+id/timeText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="time" />
+        android:id="@+id/timeText"
+        android:width="250dp"
+        android:layout_below="@id/dateText"
+        android:layout_alignParentStart="true"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SELECT A TIME"
+        android:id="@+id/timeButton"
+        android:layout_below="@id/dateButton"
+        android:layout_alignStart="@id/dateButton"/>
+
+</RelativeLayout>
+
 
     <TextView
         android:layout_width="match_parent"

@@ -129,7 +129,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        usersReference = FirebaseDatabase.getInstance().getReference("users/" + uid);
+        usersReference = FirebaseDatabase.getInstance().getReference("Profile/" + uid);
 
         usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -138,7 +138,7 @@ public class ProfileFragment extends Fragment {
 
                 String userProfileImg = thisUser.getPhoto();
 
-                username.setText(thisUser.getName());
+                username.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
 
                 if (userProfileImg != null) {
                     new ImageDownloaderTask(profileImageView).doInBackground(userProfileImg);

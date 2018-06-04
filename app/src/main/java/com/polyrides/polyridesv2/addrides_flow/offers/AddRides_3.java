@@ -1,5 +1,7 @@
 package com.polyrides.polyridesv2.addrides_flow.offers;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
 import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -26,7 +31,7 @@ import java.util.Date;
  * Use the {@link AddRides_3#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddRides_3 extends Fragment {
+public class AddRides_3 extends Fragment implements  View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,6 +47,8 @@ public class AddRides_3 extends Fragment {
     private Button nextButton;
     private EditText dateText;
     private EditText timeText;
+    private Button dateButton;
+    private Button timeButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,6 +84,18 @@ public class AddRides_3 extends Fragment {
     }
 
     @Override
+    public void onClick(View v) {
+        if (v == nextButton) {
+            DatePickerDialog dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                }
+            }, 0, 0, 0);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -88,6 +107,38 @@ public class AddRides_3 extends Fragment {
         nextButton = (Button) v.findViewById(R.id.nextButton);
         dateText = v.findViewById(R.id.dateText);
         timeText = v.findViewById(R.id.timeText);
+        dateButton = v.findViewById(R.id.dateButton);
+        timeButton = v.findViewById(R.id.timeButton);
+
+        dateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        dateText.setText((month + 1) + "/" + (dayOfMonth + 1) + "/" + year);
+                    }
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
+                dpd.show();
+            }
+        });
+
+        timeButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                Calendar c = Calendar.getInstance();
+                TimePickerDialog tpd = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        timeText.setText(hourOfDay + ":" + minute);
+                    }
+                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false);
+                tpd.show();
+            }
+        });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +148,7 @@ public class AddRides_3 extends Fragment {
                 String date = dateText.getText().toString();
 
                 String res = date + " " + time;
-                DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy h:mmaa");
+                DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm");
                 Date d = null;
                 try {
                     d = formatter.parse(res);

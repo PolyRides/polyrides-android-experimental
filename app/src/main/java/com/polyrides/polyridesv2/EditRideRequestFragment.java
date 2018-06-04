@@ -110,9 +110,9 @@ public class EditRideRequestFragment extends Fragment {
                 data.put("departureDate", ride.departureDate);
                 data.put("riderId", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 data.put("uid", ride.uid);
-                data.put("description", ride.description);
+                data.put("rideDescription", ride.description);
                 Map<String,Object> endpoints = new HashMap<>();
-                endpoints.put("/rideRequests/" + ride.uid, data);
+                endpoints.put("/RideRequest/" + ride.uid, data);
 
                 mDatabase.updateChildren(endpoints);
 

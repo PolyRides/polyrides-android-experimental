@@ -47,7 +47,7 @@ public class AddRideRequestActivity extends AppCompatActivity implements AddRide
     }
 
     public void SendOfferToFirebase() {
-        String key = mDatabase.child("rideRequests").push().getKey();
+        String key = mDatabase.child("RideRequest").push().getKey();
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("origin", origin);
@@ -61,11 +61,11 @@ public class AddRideRequestActivity extends AppCompatActivity implements AddRide
         data.put("driverId", driverId);
         data.put("cost", cost);
         data.put("uid", key);
-        data.put("description", description);
+        data.put("rideDescription", description);
         data.put("riderId", riderId);
 
         Map<String,Object> endpoints = new HashMap<String, Object>();
-        endpoints.put("/rideRequests/" + key, data);
+        endpoints.put("/RideRequest/" + key, data);
 
         mDatabase.updateChildren(endpoints);
     }

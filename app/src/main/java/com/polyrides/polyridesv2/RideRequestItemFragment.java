@@ -117,7 +117,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
         description.setText(ride.description);
 
 
-        requestorReference = FirebaseDatabase.getInstance().getReference("users/" + ride.riderId);
+        requestorReference = FirebaseDatabase.getInstance().getReference("Profile/" + ride.riderId);
 
         requestorReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -126,7 +126,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
 
                 String userProfileImg = thisUser.getPhoto();
 
-                requestorName.setText(thisUser.getName());
+                requestorName.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
 
                 if (userProfileImg != null) {
                     new ImageDownloaderTask(requestorImageView).doInBackground(userProfileImg);
@@ -185,7 +185,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
                 Toast t = Toast.makeText(getContext(), "Ride Deleted", Toast.LENGTH_LONG);
                 t.show();
 
-                mDatabase.child("rideRequests").child(ride.uid).removeValue();
+                mDatabase.child("RideRequest").child(ride.uid).removeValue();
 
                 Fragment f = RideRequestFragment.newInstance(new ArrayList<Ride>());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
