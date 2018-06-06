@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "792863860294-ldgf7md9073pa6pfndkd5qgijen2jf9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.polyrides.polyridesv2",
+            "certificate_hash": "4ff30bb8bdc47c7407351fb1bfe670b56a958372"
+          }
+        },
+        {
           "client_id": "792863860294-d0l3610ipu3gtdli8lrk1t8eotqjjnie.apps.googleusercontent.com",
           "client_type": 3
         },
@@ -33,8 +41,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792863860294-d0l3610ipu3gtdli8lrk1t8eotqjjnie.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "792863860294-frodc72oc6qrqcp4d25t5eoh332ue79t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "edu.calpoly.aweir.PolyRides"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -114,7 +114,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
 
         toLocation.setText(ride.destination);
         fromLocation.setText(ride.origin);
-        description.setText(ride.description);
+        description.setText(ride.rideDescription);
 
 
         requestorReference = FirebaseDatabase.getInstance().getReference("Profile/" + ride.riderId);

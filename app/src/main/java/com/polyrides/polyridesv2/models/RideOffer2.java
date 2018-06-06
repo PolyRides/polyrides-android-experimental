@@ -9,7 +9,7 @@ import com.google.firebase.database.PropertyName;
 import java.util.List;
 
 @IgnoreExtraProperties
-public class RideOffer implements Parcelable {
+public class RideOffer2 implements Parcelable {
     public String getOrigin() {
         return origin;
     }
@@ -90,11 +90,11 @@ public class RideOffer implements Parcelable {
         this.driverId = driverId;
     }
 
-    public Double getCost() {
+    public Integer getCost() {
         return cost;
     }
 
-    public void setCost(Double cost) {
+    public void setCost(Integer cost) {
         this.cost = cost;
     }
 
@@ -145,7 +145,7 @@ public class RideOffer implements Parcelable {
     public String driverId;
 
     @PropertyName("cost")
-    public Double cost;
+    public Integer cost;
 
     @PropertyName("uid")
     public String uid;
@@ -153,7 +153,7 @@ public class RideOffer implements Parcelable {
     @PropertyName("rideDescription")
     public String rideDescription;
 
-    protected RideOffer(Parcel in) {
+    protected RideOffer2(Parcel in) {
         this.origin = in.readString();
         this.originLat = in.readDouble();
         this.originLon = in.readDouble();
@@ -164,17 +164,16 @@ public class RideOffer implements Parcelable {
         this.seats = in.readInt();
         in.readStringList(this.riderIds);
         this.driverId = in.readString();
-        this.cost = in.readDouble();
+        this.cost = in.readInt();
         this.uid = in.readString();
         this.rideDescription = in.readString();
 
     }
 
-    public RideOffer()
+    public RideOffer2()
     {
 
     }
-
 
     @Override
     public int describeContents() {
@@ -183,18 +182,6 @@ public class RideOffer implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.origin);
-        dest.writeDouble(this.originLat);
-        dest.writeDouble(this.originLon);
-        dest.writeString(this.destination);
-        dest.writeDouble(this.destinationLat);
-        dest.writeDouble(this.destinationLon);
-        dest.writeString(this.departureDate);
-        dest.writeInt(this.seats);
-        dest.writeStringList(this.riderIds);
-        dest.writeString(this.driverId);
-        dest.writeDouble(this.cost);
-        dest.writeString(this.uid);
-        dest.writeString(this.rideDescription);
+
     }
 }

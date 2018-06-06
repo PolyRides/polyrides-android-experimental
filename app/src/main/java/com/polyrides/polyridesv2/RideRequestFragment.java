@@ -6,25 +6,36 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.polyrides.polyridesv2.dummy.MyRideRecyclerViewHolder;
 import com.polyrides.polyridesv2.dummy.MyRideRequestRecyclerViewHolder;
+import com.polyrides.polyridesv2.dummy.RideOfferAdapter;
+import com.polyrides.polyridesv2.dummy.RideRequestAdapter;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
 import com.polyrides.polyridesv2.models.RideRequest;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -39,9 +50,11 @@ public class RideRequestFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<Ride> rides;
+    private ArrayList<RideRequest> rides;
     private FloatingActionButton addButton;
     private DatabaseReference offersReference;
+    private RecyclerView recyclerView;
+    private String searchText = "";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -64,6 +77,7 @@ public class RideRequestFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -71,57 +85,40 @@ public class RideRequestFragment extends Fragment {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+        rides = new ArrayList<>();
         View view = inflater.inflate(R.layout.fragment_ride_list, container, false);
 
         getActivity().setTitle("Ride Requests");
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("RideRequest");
-        FirebaseRecyclerOptions<RideRequest> options = new FirebaseRecyclerOptions.Builder<RideRequest>().setQuery(query, RideRequest.class).build();
-        FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<RideRequest, MyRideRequestRecyclerViewHolder>(options) {
-
+        FirebaseDatabase.getInstance().getReference().child("RideRequest").addValueEventListener(new ValueEventListener() {
             @Override
-            protected void onBindViewHolder(@NonNull final MyRideRequestRecyclerViewHolder holder, int position, @NonNull RideRequest model) {
-                holder.mItem = model;
-                holder.toText.setText(model.destination);
-                holder.fromText.setText(model.origin);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    RideRequest r = d.getValue(RideRequest.class);
+                    rides.add(r);
+                }
 
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (null != mListener) {
-                            // Notify the active callbacks interface (the activity, if the
-                            // fragment is attached to one) that an item has been selected.
-                            mListener.onListFragmentInteraction(holder.mItem);
-                        }
-                    }
-                });
+                search();
             }
 
-            @NonNull
             @Override
-            public MyRideRequestRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.fragment_ride, parent, false);
-                return new MyRideRequestRecyclerViewHolder(view);
-            }
-        };
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        adapter.startListening();
+            }
+        });
+
+        search();
 
         // Set the adapter
         if (view != null) {
-
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
-            Context context = recyclerView.getContext();
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(adapter);
 
             addButton = (FloatingActionButton) view.findViewById(R.id.addBtn);
 
@@ -136,6 +133,68 @@ public class RideRequestFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                search();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchText = newText;
+                return true;
+            }
+
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+
+                searchText = "";
+                search();
+                return false;
+            }
+        });
+
+    }
+
+    private void search() {
+        List<RideRequest> items = new ArrayList<>();
+        Query query;
+        if (!searchText.isEmpty()) {
+            for (RideRequest e : rides) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(e.origin);
+                sb.append(e.destination);
+                sb.append(e.rideDescription);
+
+                if (sb.toString().toLowerCase().contains(searchText.toLowerCase()))
+                    items.add(e);
+            }
+        }
+        else {
+            items = rides;
+        }
+
+        Context context = recyclerView.getContext();
+        RideRequestAdapter adapter = new RideRequestAdapter(items, mListener);
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        }
+        recyclerView.setAdapter(adapter);
+    }
 
     @Override
     public void onAttach(Context context) {

@@ -17,18 +17,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.polyrides.polyridesv2.dummy.MyRideRecyclerViewHolder;
+import com.polyrides.polyridesv2.dummy.RideOfferAdapter;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
+import com.polyrides.polyridesv2.models.RideOffer2;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -43,10 +52,12 @@ public class RideOfferFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-    private ArrayList<Ride> rides;
     private FloatingActionButton addButton;
     private DatabaseReference offersReference;
     FirebaseRecyclerAdapter mAdapter;
+    private String searchText = "";
+    private RecyclerView recyclerView;
+    private List<RideOffer> rides = new ArrayList<>();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -75,6 +86,8 @@ public class RideOfferFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             rides = getArguments().getParcelableArrayList("rides");
         }
+
+
     }
 
     @Override
@@ -89,69 +102,91 @@ public class RideOfferFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                search();
+
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                searchText = newText;
+                return true;
+            }
+
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+
+                searchText = "";
+                search();
                 return false;
             }
         });
+
+    }
+
+    private void search() {
+        List<RideOffer> items = new ArrayList<>();
+        Query query;
+        if (!searchText.isEmpty()) {
+            for (RideOffer e : rides) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(e.origin);
+                sb.append(e.destination);
+                sb.append(e.rideDescription);
+
+                if (sb.toString().toLowerCase().contains(searchText.toLowerCase()))
+                    items.add(e);
+            }
+        }
+        else {
+            items = rides;
+        }
+
+        Context context = recyclerView.getContext();
+        RideOfferAdapter adapter = new RideOfferAdapter(items, mListener);
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        }
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        rides = new ArrayList<>();
         getActivity().setTitle("Ride Offers");
         View view = inflater.inflate(R.layout.fragment_ride_list, container, false);
 
         getActivity().setTitle(R.string.ride_offers_text);
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("RideOffer");
-        FirebaseRecyclerOptions<RideOffer> options = new FirebaseRecyclerOptions.Builder<RideOffer>().setQuery(query, RideOffer.class).build();
-        mAdapter = new FirebaseRecyclerAdapter<RideOffer, MyRideRecyclerViewHolder>(options) {
-
+        FirebaseDatabase.getInstance().getReference().child("RideOffer").addValueEventListener(new ValueEventListener() {
             @Override
-            protected void onBindViewHolder(@NonNull final MyRideRecyclerViewHolder holder, int position, @NonNull RideOffer model) {
-                holder.mItem = model;
-                holder.toText.setText(model.destination);
-                holder.fromText.setText(model.origin);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    RideOffer r = d.getValue(RideOffer.class);
+                    rides.add(r);
+                }
 
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (null != mListener) {
-                            // Notify the active callbacks interface (the activity, if the
-                            // fragment is attached to one) that an item has been selected.
-                            mListener.onListFragmentInteraction(holder.mItem);
-                        }
-                    }
-                });
+                search();
             }
 
-            @NonNull
             @Override
-            public MyRideRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.fragment_ride, parent, false);
-                return new MyRideRecyclerViewHolder(view);
-            }
-        };
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        mAdapter.startListening();
+            }
+        });
+
+        search();
 
         // Set the adapter
         if (view != null) {
 
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
-            Context context = recyclerView.getContext();
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(mAdapter);
 
             addButton = (FloatingActionButton) view.findViewById(R.id.addBtn);
 

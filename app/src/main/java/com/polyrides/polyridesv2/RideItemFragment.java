@@ -45,7 +45,9 @@ import com.polyrides.polyridesv2.models.RideOffer;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +90,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
     private TextView driverName;
     private DatabaseReference driverReference;
     private CardView driverCard;
+    private TextView dateView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -134,6 +137,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
         driverName = view.findViewById(R.id.driverName);
         driverImageView = view.findViewById(R.id.driverImgView);
         driverCard = view.findViewById(R.id.driverCard);
+        dateView = view.findViewById(R.id.dateView);
 
         driverReference = FirebaseDatabase.getInstance().getReference("Profile/" + ride.driverId);
 
@@ -231,8 +235,15 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
         fromLocation.setText(ride.origin);
         toLocation.setText(ride.destination);
-        description.setText(ride.description);
+        description.setText(ride.rideDescription);
         ridesAvailable.setText("Rides Available: " + ride.seats);
+
+        String s = ride.departureDate;
+        Date d = new Date( ((long) Double.parseDouble(s)) * 1000);
+        SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy hh:mm:ss aa");
+        dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT-8"));
+        String date = dateFormat.format(d);
+        dateView.setText(date);
 
 
         if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(ride.driverId)) {

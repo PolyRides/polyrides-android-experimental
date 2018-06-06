@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.R;
@@ -117,7 +118,7 @@ public class AddRides_3 extends Fragment implements  View.OnClickListener {
                 DatePickerDialog dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        dateText.setText((month + 1) + "/" + (dayOfMonth + 1) + "/" + year);
+                        dateText.setText((month + 1) + "/" + dayOfMonth + "/" + year);
                     }
                 }, c.get(Calendar.YEAR), c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
                 dpd.show();
@@ -154,19 +155,25 @@ public class AddRides_3 extends Fragment implements  View.OnClickListener {
                     d = formatter.parse(res);
                 }
                 catch (Exception e ) {
+                    Toast t = Toast.makeText(getContext(), "Please check your date and time and resubmit.", Toast.LENGTH_SHORT);
+                    t.show();
 
                 }
 
-                AddRideOfferActivity a = (AddRideOfferActivity) getActivity();
+                if (d != null) {
+                    AddRideOfferActivity a = (AddRideOfferActivity) getActivity();
 
-                a.setSeats(Integer.valueOf(numSeats.getText().toString()));
-                a.setDescription(descText.getText().toString());
-                a.setCost(Double.valueOf(costText.getText().toString()));
+                    a.setDepartureDate(Long.toString(d.getTime() / 1000));
+                    a.setSeats(Integer.valueOf(numSeats.getText().toString()));
+                    a.setDescription(descText.getText().toString());
+                    a.setCost(Double.valueOf(costText.getText().toString()));
 
-                Fragment f = AddRides_4.newInstance("", "");
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.container, f);
-                ft.commit();
+                    Fragment f = AddRides_4.newInstance("", "");
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.container, f);
+                    ft.commit();
+                }
+
             }
         });
 

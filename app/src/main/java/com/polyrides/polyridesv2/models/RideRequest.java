@@ -1,11 +1,13 @@
 package com.polyrides.polyridesv2.models;
 
+import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
+@SuppressLint("ParcelCreator")
 public class RideRequest implements Parcelable {
     public String uid;
     public String destination;
@@ -16,7 +18,7 @@ public class RideRequest implements Parcelable {
     public Double originLon;
     public String departureDate;
     public String riderId;
-    public String description;
+    public String rideDescription;
     public String driverId;
 
     protected RideRequest(Parcel in) {
@@ -29,7 +31,7 @@ public class RideRequest implements Parcelable {
         this.originLon = in.readDouble();
         this.departureDate = in.readString();
         this.riderId = in.readString();
-        this.description = in.readString();
+        this.rideDescription = in.readString();
         this.driverId = in.readString();
 
     }
@@ -38,18 +40,6 @@ public class RideRequest implements Parcelable {
     {
 
     }
-
-    public static final Parcelable.Creator<RideOffer> CREATOR = new Parcelable.Creator<RideOffer>() {
-        @Override
-        public RideOffer createFromParcel(Parcel source) {
-            return new RideOffer(source);
-        }
-
-        @Override
-        public RideOffer[] newArray(int size) {
-            return new RideOffer[size];
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -67,7 +57,7 @@ public class RideRequest implements Parcelable {
         dest.writeDouble(this.originLon);
         dest.writeString(this.departureDate);
         dest.writeString(this.riderId);
-        dest.writeString(this.description);
+        dest.writeString(this.rideDescription);
         dest.writeString(this.driverId);
     }
 }

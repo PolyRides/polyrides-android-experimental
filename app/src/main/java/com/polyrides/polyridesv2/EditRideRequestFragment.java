@@ -90,7 +90,7 @@ public class EditRideRequestFragment extends Fragment {
 
         toText.setText(ride.destination);
         fromText.setText(ride.origin);
-        description.setText(ride.description);
+        description.setText(ride.rideDescription);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +98,7 @@ public class EditRideRequestFragment extends Fragment {
 
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
-                ride.description = description.getText().toString();
+                ride.rideDescription = description.getText().toString();
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("origin", ride.origin);
@@ -110,7 +110,7 @@ public class EditRideRequestFragment extends Fragment {
                 data.put("departureDate", ride.departureDate);
                 data.put("riderId", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 data.put("uid", ride.uid);
-                data.put("rideDescription", ride.description);
+                data.put("rideDescription", ride.rideDescription);
                 Map<String,Object> endpoints = new HashMap<>();
                 endpoints.put("/RideRequest/" + ride.uid, data);
 
