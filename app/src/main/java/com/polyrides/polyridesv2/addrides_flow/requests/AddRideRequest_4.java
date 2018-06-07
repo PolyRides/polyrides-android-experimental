@@ -91,7 +91,7 @@ public class AddRideRequest_4 extends Fragment {
 
         Handler h = new Handler();
         // The Runnable will be executed after the given delay time
-        h.postDelayed(r, 3000); // will be delayed for 1.5 seconds
+        h.postDelayed(r, 2000);
 
 
 

@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -22,16 +23,33 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.polyrides.polyridesv2.models.AppUser;
 import com.polyrides.polyridesv2.models.RideOffer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
@@ -98,6 +116,8 @@ public class EditRideOfferFragment extends Fragment {
         getActivity().setTitle("Edit Ride Offer");
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_edit_ride_offer, container, false);
+        Long value = Long.parseLong(ride.departureDate);
+        Date existingDate = new Date(value * 1000);
 
         toText = v.findViewById(R.id.toText);
         fromText = v.findViewById(R.id.fromText);
@@ -115,6 +135,13 @@ public class EditRideOfferFragment extends Fragment {
         description.setText(ride.rideDescription);
         numSeats.setText(ride.seats.toString());
         cost.setText(ride.cost.toString());
+
+        Calendar c = new GregorianCalendar();
+        c.setTime(existingDate);
+
+
+        dateText.setText(c.get(Calendar.MONTH) + 1 + "/" + c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar.YEAR));
+        timeText.setText(c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE));
 
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +221,11 @@ public class EditRideOfferFragment extends Fragment {
                     endpoints.put("/RideOffer/" + ride.uid, data);
 
                     mDatabase.updateChildren(endpoints);
+
+                    if (ride.riderIds != null)
+                    for (String s : ride.riderIds) {
+                        SendOfferMessage(s, ride.uid, "One of your rides has been updated.");
+                    }
 
                     Fragment f = RideItemFragment.newInstance(ride);
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -285,5 +317,66 @@ public class EditRideOfferFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void SendOfferMessage(final String target, final String uid, final String message) {
+
+        FirebaseDatabase.getInstance().getReference("Profile").orderByChild("uid").equalTo(target).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    AppUser user = d.getValue(AppUser.class);
+
+                    JSONObject not = new JSONObject();
+                    JSONObject notificationData = new JSONObject();
+                    JSONObject data = new JSONObject();
+                    try {
+                        not.put("to", user.getDeviceToken());
+                        notificationData.put("body", message);
+                        notificationData.put("title", "PolyRides");
+                        not.put("notification", notificationData);
+                        data.put("offerUid", uid);
+                        not.put("data",data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String bodyData = not.toString();
+
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyData);
+
+                    OkHttpClient client = new OkHttpClient();
+                    String url = "https://fcm.googleapis.com/fcm/send";
+                    final Request request = new Request.Builder()
+                            .url(url)
+                            .header("Authorization", "key=AIzaSyA_se-58n4sJP5ckp7NVURTuvgmDZamxiU")
+                            .header("Content-Type", "application/json")
+                            .post(body)
+                            .build();
+                    try {
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String s = response.body().toString();
+                                String s2 = s;
+                            }
+                        });
+
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

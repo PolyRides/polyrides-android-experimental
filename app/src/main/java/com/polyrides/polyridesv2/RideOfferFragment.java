@@ -17,26 +17,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.polyrides.polyridesv2.dummy.MyRideRecyclerViewHolder;
 import com.polyrides.polyridesv2.dummy.RideOfferAdapter;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
-import com.polyrides.polyridesv2.models.RideOffer2;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -239,4 +233,6 @@ public class RideOfferFragment extends Fragment {
         // TODO: Update argument type and name
         void onListFragmentInteraction(RideOffer item);
     }
+
+
 }

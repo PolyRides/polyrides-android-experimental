@@ -58,7 +58,7 @@ public class AddRideRequestActivity extends AppCompatActivity implements AddRide
         data.put("destinationLon", destinationLon);
         data.put("departureDate", departureDate);
         data.put("seats", seats);
-        data.put("driverId", driverId);
+        data.put("driverId", "");
         data.put("cost", cost);
         data.put("uid", key);
         data.put("rideDescription", description);

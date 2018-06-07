@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
@@ -37,8 +38,24 @@ import com.polyrides.polyridesv2.models.AppUser;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideRequest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
@@ -70,6 +87,12 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
     private CardView riderActionsCard;
     private LinearLayout riderActionsLayout;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private TextView dateView;
+    private Button offerBtn;
+    private Boolean rideAccepted;
+    private TextView spotsAvailable;
+    private CardView driverActionsCard;
+    private LinearLayout riderNotAddedLayout;
 
 
     private OnFragmentInteractionListener mListener;
@@ -111,11 +134,41 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
         requestorName = v.findViewById(R.id.requestorName);
         riderActionsCard = v.findViewById(R.id.riderActionsCard);
         riderActionsLayout = v.findViewById(R.id.riderActionsLayout);
+        dateView = v.findViewById(R.id.dateView);
+        offerBtn = v.findViewById(R.id.offerBtn);
+        spotsAvailable = v.findViewById(R.id.spotsAvailable);
+        driverActionsCard = v.findViewById(R.id.driverActionsCard);
+        riderNotAddedLayout = v.findViewById(R.id.riderNotAddedLayout);
 
         toLocation.setText(ride.destination);
         fromLocation.setText(ride.origin);
         description.setText(ride.rideDescription);
 
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        if (ride.driverId.equals(uid)) {
+            rideAccepted = true;
+            spotsAvailable.setText("You're already the driver for this ride.");
+            offerBtn.setText("Leave Ride");
+        }
+        else {
+            rideAccepted = false;
+        }
+
+        if (!ride.riderId.equals(uid)) {
+            driverActionsCard.setVisibility(View.VISIBLE);
+            riderNotAddedLayout.setVisibility(View.VISIBLE);
+        }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        String s = ride.departureDate;
+        Date d = new Date( ((long) Double.parseDouble(s)) * 1000);
+        SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yy hh:mm:ss aa");
+        String date = dateFormat.format(d);
+        dateView.setText(date);
 
         requestorReference = FirebaseDatabase.getInstance().getReference("Profile/" + ride.riderId);
 
@@ -152,9 +205,7 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
             riderActionsLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
         }
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
 
         requestorCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,10 +238,53 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
 
                 mDatabase.child("RideRequest").child(ride.uid).removeValue();
 
+                if (ride.driverId != null && !ride.driverId.equals("")) {
+                    SendRequestMessage(ride.driverId, ride.uid, "One of your ride requests has been deleted.");
+                }
+
                 Fragment f = RideRequestFragment.newInstance(new ArrayList<Ride>());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, f);
                 transaction.commit();
+            }
+        });
+
+        offerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rideAccepted) {
+                    rideAccepted = false;
+                    // leave ride functionality
+                    Map<String, Object> setupDriver = new HashMap<>();
+                    setupDriver.put("/RideRequest/" + ride.uid + "/driverId", "");
+                    FirebaseDatabase.getInstance().getReference().updateChildren(setupDriver);
+
+                    Toast t = Toast.makeText(getContext(), "You've been removed from this ride.", Toast.LENGTH_SHORT);
+                    t.show();
+
+                    spotsAvailable.setText("Accept the offer to sign up as a driver.");
+                    offerBtn.setText("Accept Offer");
+
+                    SendRequestMessage(ride.riderId, ride.uid, "A driver has been removed from your ride.");
+                }
+                else {
+                    // add ride functionality
+                    rideAccepted = true;
+
+                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                    Map<String, Object> setupDriver = new HashMap<>();
+                    setupDriver.put("/RideRequest/" + ride.uid + "/driverId", uid);
+                    FirebaseDatabase.getInstance().getReference().updateChildren(setupDriver);
+
+                    Toast t = Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT);
+                    t.show();
+
+                    spotsAvailable.setText("You're already the driver for this ride.");
+                    offerBtn.setText("Leave Ride");
+
+                    SendRequestMessage(ride.riderId, ride.uid, "A driver has signed up for your ride.");
+                }
             }
         });
 
@@ -287,5 +381,67 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+    public void SendRequestMessage(final String target, final String uid, final String message) {
+
+        FirebaseDatabase.getInstance().getReference("Profile").orderByChild("uid").equalTo(target).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    AppUser user = d.getValue(AppUser.class);
+
+                    JSONObject not = new JSONObject();
+                    JSONObject notificationData = new JSONObject();
+                    JSONObject data = new JSONObject();
+                    try {
+                        not.put("to", user.getDeviceToken());
+                        notificationData.put("body", message);
+                        notificationData.put("title", "PolyRides");
+                        not.put("notification", notificationData);
+                        data.put("requestUid", uid);
+                        not.put("data",data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String bodyData = not.toString();
+
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyData);
+
+                    OkHttpClient client = new OkHttpClient();
+                    String url = "https://fcm.googleapis.com/fcm/send";
+                    final Request request = new Request.Builder()
+                            .url(url)
+                            .header("Authorization", "key=AIzaSyA_se-58n4sJP5ckp7NVURTuvgmDZamxiU")
+                            .header("Content-Type", "application/json")
+                            .post(body)
+                            .build();
+                    try {
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String s = response.body().toString();
+                                String s2 = s;
+                            }
+                        });
+
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

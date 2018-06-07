@@ -117,6 +117,33 @@
                             android:layout_weight="8"
                             />
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="2"
+                            android:lineSpacingExtra="8dp"
+                            android:text="DATE"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/dateView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="8dp"
+                            android:text=""
+                            android:textSize="18sp"
+                            android:layout_marginBottom="12dp"
+                            android:layout_weight="8"
+                            />
+                    </LinearLayout>
 
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -220,6 +247,70 @@
                 android:layout_margin="8dp"
                 app:cardElevation="4dp"
                 app:contentPadding="16dp"
+                android:visibility="gone"
+                android:id="@+id/driverActionsCard"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:id="@+id/riderNotAddedLayout"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:layout_marginRight="5dp"
+                        android:lineSpacingExtra="8dp"
+                        android:text="ACTIONS"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_weight="2"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Accept the offer to sign up as a driver. "
+                        android:paddingBottom="10dp"
+                        android:id="@+id/spotsAvailable"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/offerBtn"
+                        android:text="Accept Offer"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:id="@+id/riderAddedLayout"
+                    android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You're already added to this ride."
+                        android:layout_gravity="center_horizontal"
+                        android:paddingBottom="10dp" />
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/leaveRideBtn"
+                        android:text="Leave Ride"/>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp"
                 android:id="@+id/riderActionsCard"
                 android:visibility="gone"
                 >
@@ -258,16 +349,5 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
-    <android.support.design.widget.FloatingActionButton
-        android:layout_gravity="bottom|right"
-        app:layout_anchorGravity="bottom|right|end"
-        android:layout_marginEnd="16sp"
-        android:elevation="8dp"
-        android:layout_marginBottom="75sp"
-        android:layout_width="wrap_content"
-        android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_chat_black_24dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/addBtn"/>
 </android.support.design.widget.CoordinatorLayout>
 

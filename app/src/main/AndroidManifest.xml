@@ -34,6 +34,19 @@
         <activity
             android:name=".AddRideRequestActivity"
             android:label="Add a Ride Request"></activity>
+
+        <service
+            android:name="com.polyrides.polyridesv2.notifications.PolyridesMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

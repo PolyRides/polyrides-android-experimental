@@ -38,7 +38,7 @@ public class DummyNotificationContent {
     }
 
     private static DummyNotificationItem createDummyItem(int position) {
-        return new DummyNotificationItem("", "Notification " + position, makeDetails(position));
+        return new DummyNotificationItem("", "NotificationData " + position, makeDetails(position));
     }
 
     private static String makeDetails(int position) {

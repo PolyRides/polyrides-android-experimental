@@ -5,5 +5,6 @@ public class Profile {
     public String firstName;
     public String lastName;
     public String emailAddress;
-    public String password;
+    public String deviceToken;
+    public String profileDescription;
 }

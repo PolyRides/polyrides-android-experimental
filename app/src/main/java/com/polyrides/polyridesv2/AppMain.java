@@ -1,5 +1,6 @@
 package com.polyrides.polyridesv2;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,9 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
 import com.polyrides.polyridesv2.models.RideRequest;
@@ -78,10 +84,64 @@ public class AppMain extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_main2);
 
+        Intent intent = getIntent();
+
         userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        if (intent.hasExtra("offerUid") || intent.hasExtra("requestUid")) {
+
+            if (intent.hasExtra("offerUid")) {
+                String s = (String) intent.getExtras().get("offerUid");
+                FirebaseDatabase.getInstance().getReference("RideOffer")
+                        .orderByChild("uid").equalTo(s).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        RideOffer f = null;
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            f = d.getValue(RideOffer.class);
+                        }
+                        Fragment fragment = RideItemFragment.newInstance(f);
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        ft.addToBackStack(null);
+                        ft.replace(R.id.container, fragment).commit();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+            else {
+                String s = (String) intent.getExtras().get("requestUid");
+                FirebaseDatabase.getInstance().getReference("RideRequest")
+                        .orderByChild("uid").equalTo(s).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        RideRequest f = null;
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            f = d.getValue(RideRequest.class);
+                        }
+                        Fragment fragment = RideRequestItemFragment.newInstance(f);
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        ft.addToBackStack(null);
+                        ft.replace(R.id.container, fragment).commit();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+
+        }
 
         Fragment fragment = RideOfferFragment.newInstance(null);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

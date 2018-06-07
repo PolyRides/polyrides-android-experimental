@@ -1,5 +1,7 @@
 package com.polyrides.polyridesv2.addrides_flow.requests;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,12 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.polyrides.polyridesv2.AddRideOfferActivity;
 import com.polyrides.polyridesv2.AddRideRequestActivity;
 import com.polyrides.polyridesv2.R;
 import com.polyrides.polyridesv2.addrides_flow.offers.AddRides_4;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +48,10 @@ public class AddRideRequest_3 extends Fragment {
     private EditText descText;
     private EditText costText;
     private Button nextButton;
+    private EditText dateText;
+    private EditText timeText;
+    private Button dateButton;
+    private Button timeButton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,21 +96,75 @@ public class AddRideRequest_3 extends Fragment {
         descText = (EditText) v.findViewById(R.id.descText);
         costText = (EditText) v.findViewById(R.id.costText);
         nextButton = (Button) v.findViewById(R.id.nextButton);
+        dateText = v.findViewById(R.id.dateText);
+        timeText = v.findViewById(R.id.timeText);
+        dateButton = v.findViewById(R.id.dateButton);
+        timeButton = v.findViewById(R.id.timeButton);
+
+        dateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog dpd = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        dateText.setText((month + 1) + "/" + dayOfMonth + "/" + year);
+                    }
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH) , c.get(Calendar.DAY_OF_MONTH));
+                dpd.show();
+            }
+        });
+
+        timeButton.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                Calendar c = Calendar.getInstance();
+                TimePickerDialog tpd = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        timeText.setText(hourOfDay + ":" + minute);
+                    }
+                }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), false);
+                tpd.show();
+            }
+        });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                AddRideRequestActivity a = (AddRideRequestActivity) getActivity();
 
-                // a.setSeats(Integer.valueOf(numSeats.getText().toString()));
-                a.setDescription(descText.getText().toString());
-                // a.setCost(Double.valueOf(costText.getText().toString()));
+                String time = timeText.getText().toString();
+                String date = dateText.getText().toString();
 
-                Fragment f = AddRideRequest_4.newInstance("", "");
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.container, f);
-                ft.commit();
+                String res = date + " " + time;
+                DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+                Date d = null;
+                try {
+                    d = formatter.parse(res);
+                }
+                catch (Exception e ) {
+                    Toast t = Toast.makeText(getContext(), "Please check your date and time and resubmit.", Toast.LENGTH_SHORT);
+                    t.show();
+
+                }
+
+
+                if (d != null) {
+                    AddRideRequestActivity a = (AddRideRequestActivity) getActivity();
+
+                    a.setDepartureDate(Long.toString(d.getTime() / 1000));
+                    //a.setSeats(Integer.valueOf(numSeats.getText().toString()));
+                    a.setDescription(descText.getText().toString());
+                    //a.setCost(Double.valueOf(costText.getText().toString()));
+
+                    Fragment f = AddRideRequest_4.newInstance("", "");
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.container, f);
+                    ft.commit();
+                }
             }
         });
 
