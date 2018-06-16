@@ -1,7 +1,9 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,12 +31,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.polyrides.polyridesv2.models.AppUser;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideRequest;
@@ -93,6 +99,11 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
     private TextView spotsAvailable;
     private CardView driverActionsCard;
     private LinearLayout riderNotAddedLayout;
+    private ImageView driverImgView;
+    private TextView driverName;
+
+    private CardView driverCard;
+    private LinearLayout driverLayout;
 
 
     private OnFragmentInteractionListener mListener;
@@ -121,6 +132,8 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        getActivity().setTitle("Ride Request");
         View v = inflater.inflate(R.layout.fragment_ride_request_item, container, false);
 
         toLocation = v.findViewById(R.id.tolocation);
@@ -133,12 +146,16 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
         requestorImageView = v.findViewById(R.id.requestorImgView);
         requestorName = v.findViewById(R.id.requestorName);
         riderActionsCard = v.findViewById(R.id.riderActionsCard);
-        riderActionsLayout = v.findViewById(R.id.riderActionsLayout);
+        riderActionsLayout = v.findViewById(R.id.riderActionsLayout1);
         dateView = v.findViewById(R.id.dateView);
         offerBtn = v.findViewById(R.id.offerBtn);
         spotsAvailable = v.findViewById(R.id.spotsAvailable);
         driverActionsCard = v.findViewById(R.id.driverActionsCard);
-        riderNotAddedLayout = v.findViewById(R.id.riderNotAddedLayout);
+        riderNotAddedLayout = v.findViewById(R.id.riderNotAddedLayout1);
+        driverCard = v.findViewById(R.id.driverCard);
+        driverLayout = v.findViewById(R.id.driverLayout);
+        driverImgView = v.findViewById(R.id.driverImgView);
+        driverName = v.findViewById(R.id.driverName);
 
         toLocation.setText(ride.destination);
         fromLocation.setText(ride.origin);
@@ -146,7 +163,57 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        if (ride.driverId.equals(uid)) {
+        if (!uid.equals(ride.riderId)) {
+            requestorCard.setVisibility(View.VISIBLE);
+            riderActionsCard.setVisibility(View.GONE);
+        }
+        else {
+            riderActionsCard.setVisibility(View.VISIBLE);
+            requestorLayout.setLayoutParams(new FrameLayout.LayoutParams(0,0));
+
+            if (ride.driverId != null && !ride.driverId.isEmpty()) {
+                driverCard.setVisibility(View.VISIBLE);
+
+                FirebaseDatabase.getInstance().getReference("Profile/" + ride.driverId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        AppUser thisUser = dataSnapshot.getValue(AppUser.class);
+
+                        driverName.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
+
+                        FirebaseStorage
+                                .getInstance().getReference().child("images/" + thisUser.getUid() + ".jpeg")
+                                .getBytes(10 * 1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                Matrix matrix = new Matrix();
+                                matrix.postRotate(90);
+                                Bitmap fin = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+                                driverImgView.setImageBitmap(fin);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                driverImgView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                driverName.setText(ride.driverId);
+            }
+            else {
+                driverLayout.setLayoutParams(new FrameLayout.LayoutParams(0,0));
+            }
+        }
+
+        if (ride.driverId != null && ride.driverId.equals(uid)) {
             rideAccepted = true;
             spotsAvailable.setText("You're already the driver for this ride.");
             offerBtn.setText("Leave Ride");
@@ -177,16 +244,25 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
             public void onDataChange(DataSnapshot dataSnapshot) {
                 AppUser thisUser = dataSnapshot.getValue(AppUser.class);
 
-                String userProfileImg = thisUser.getPhoto();
-
                 requestorName.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
 
-                if (userProfileImg != null) {
-                    new ImageDownloaderTask(requestorImageView).doInBackground(userProfileImg);
-                }
-                else {
-                    requestorImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
-                }
+                FirebaseStorage
+                        .getInstance().getReference().child("images/" + thisUser.getUid() + ".jpeg")
+                        .getBytes(10 * 1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        Bitmap fin = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+                        requestorImageView.setImageBitmap(fin);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        requestorImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
+                    }
+                });
             }
 
             @Override
@@ -195,22 +271,21 @@ public class RideRequestItemFragment extends Fragment implements OnMapReadyCallb
             }
         });
 
-
-        if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(ride.riderId)) {
-            requestorCard.setVisibility(View.VISIBLE);
-            riderActionsCard.setVisibility(View.VISIBLE);
-        }
-        else {
-            requestorLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
-            riderActionsLayout.setLayoutParams(new LinearLayout.LayoutParams(0,0));
-        }
-
-
-
         requestorCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment f = ProfileFragment.newInstance(ride.riderId);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.container, f);
+                transaction.commit();
+            }
+        });
+
+        driverCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment f = ProfileFragment.newInstance(ride.driverId);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.addToBackStack(null);
                 transaction.replace(R.id.container, f);

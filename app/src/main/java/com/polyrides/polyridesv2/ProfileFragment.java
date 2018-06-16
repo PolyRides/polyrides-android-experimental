@@ -1,9 +1,12 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -16,13 +19,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.polyrides.polyridesv2.models.AppUser;
+
+import java.io.File;
 
 
 /**
@@ -56,6 +65,8 @@ public class ProfileFragment extends Fragment {
     private LinearLayout pastRidesLayout;
     private CardView signOutCard;
     private LinearLayout signOutLayout;
+    private TextView userDesc;
+    private TextView userEmail;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -97,6 +108,7 @@ public class ProfileFragment extends Fragment {
 
         profileImageView = (ImageView) cl.findViewById(R.id.profileimage);
         username = (TextView) cl.findViewById(R.id.userName);
+        userEmail = cl.findViewById(R.id.userEmail);
 
         signOutButton = (Button) cl.findViewById(R.id.signOutButton);
         viewPastRidesBtn = (Button) cl.findViewById(R.id.viewPastRidesBtn);
@@ -104,6 +116,7 @@ public class ProfileFragment extends Fragment {
         signOutLayout = cl.findViewById(R.id.signOutLayout);
         pastRidesCard = cl.findViewById(R.id.PastRidesCard);
         pastRidesLayout = cl.findViewById(R.id.PastRidesLayout);
+        userDesc = cl.findViewById(R.id.userDesc);
 
         if (isThisMe) {
             pastRidesCard.setVisibility(View.VISIBLE);
@@ -136,16 +149,29 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 thisUser = dataSnapshot.getValue(AppUser.class);
 
-                String userProfileImg = thisUser.getPhoto();
-
                 username.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
+                userDesc.setText(thisUser.getProfileDescription());
+                userEmail.setText(thisUser.getEmailAddress());
+                FirebaseStorage
+                        .getInstance().getReference().child("images/" + thisUser.getUid() + ".jpeg")
+                        .getBytes(10 * 1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        Bitmap fin = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
 
-                if (userProfileImg != null) {
-                    new ImageDownloaderTask(profileImageView).doInBackground(userProfileImg);
-                }
-                else {
-                    profileImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
-                }
+
+                        profileImageView.setImageBitmap(fin);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        profileImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
+                    }
+                });
+
             }
 
             @Override

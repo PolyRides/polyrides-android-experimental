@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Where are leaving from?"
+        android:text="Where are you leaving from?"
         android:layout_margin="10dp"/>
     <fragment
         android:id="@+id/place_autocomplete_fragment"

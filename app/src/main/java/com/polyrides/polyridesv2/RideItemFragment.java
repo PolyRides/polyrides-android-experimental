@@ -1,7 +1,9 @@
 package com.polyrides.polyridesv2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -29,12 +31,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.polyrides.polyridesv2.models.AppUser;
 import com.polyrides.polyridesv2.models.Ride;
 import com.polyrides.polyridesv2.models.RideOffer;
@@ -112,6 +117,8 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             ride = getArguments().getParcelable("ride");
@@ -121,6 +128,10 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getActivity().setTitle("Ride Offer");
+        if (ride.riderIds == null) {
+            ride.riderIds = new ArrayList<>();
+        }
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_ride_item, container, false);
         if (ride.riderIds != null) {
@@ -161,12 +172,25 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
                 driverName.setText(thisUser.getFirstName() + " " + thisUser.getLastName());
 
-                if (userProfileImg != null) {
-                    new ImageDownloaderTask(driverImageView).doInBackground(userProfileImg);
-                }
-                else {
-                    driverImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
-                }
+                FirebaseStorage
+                        .getInstance().getReference().child("images/" + thisUser.getUid() + ".jpeg")
+                        .getBytes(10 * 1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        Bitmap fin = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+
+
+                        driverImageView.setImageBitmap(fin);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        driverImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.default_user_image));
+                    }
+                });
             }
 
             @Override
@@ -174,7 +198,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
-        r
+
 
         offerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +208,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
 
 
                 if (!alreadyAccepted) {
-                    if (ride.seats <= 0 || (ride.riderIds != null && ride.riderIds.contains(uid))) {
+                    if (ride.seats == ride.riderIds.size()  || (ride.riderIds != null && ride.riderIds.contains(uid))) {
                         Toast t = Toast.makeText(getContext(), "This ride has no more seats available.", Toast.LENGTH_SHORT);
                         t.show();
                     }
@@ -198,19 +222,14 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                         }
 
                         ride.riderIds.add(uid);
-                        ride.seats--;
 
                         Map<String, Object> setupRiders = new HashMap<>();
                         setupRiders.put("/RideOffer/" + ride.uid + "/riderIds", ride.riderIds);
 
-                        Map<String, Object> setupSeats = new HashMap<>();
-                        setupSeats.put("/RideOffer/" + ride.uid + "/seats", ride.seats);
-
                         mDatabase.updateChildren(setupRiders);
-                        mDatabase.updateChildren(setupSeats);
 
                         Toast t = Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT);
-                        ridesAvailable.setText("Rides Available: " + ride.seats);
+                        ridesAvailable.setText("Rides Available: " + (ride.seats - ride.riderIds.size()));
                         t.show();
 
 
@@ -228,19 +247,15 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
                 else {
 
                     ride.riderIds.remove(uid);
-                    ride.seats++;
 
                     Map<String, Object> setupRiders = new HashMap<>();
                     setupRiders.put("/RideOffer/" + ride.uid + "/riderIds", ride.riderIds);
 
-                    Map<String, Object> setupSeats = new HashMap<>();
-                    setupSeats.put("/RideOffer/" + ride.uid + "/seats", ride.seats);
 
                     mDatabase.updateChildren(setupRiders);
-                    mDatabase.updateChildren(setupSeats);
 
                     Toast t = Toast.makeText(getContext(), "You have been removed.", Toast.LENGTH_SHORT);
-                    ridesAvailable.setText("Rides Available: " + ride.seats);
+                    ridesAvailable.setText("Rides Available: " + (ride.seats - ride.riderIds.size()));
                     offerButton.setText("Accept Offer");
                     alreadyAccepted = false;
                     t.show();
@@ -253,7 +268,7 @@ public class RideItemFragment extends Fragment implements OnMapReadyCallback {
         fromLocation.setText(ride.origin);
         toLocation.setText(ride.destination);
         description.setText(ride.rideDescription);
-        ridesAvailable.setText("Rides Available: " + ride.seats);
+        ridesAvailable.setText("Rides Available: " + (ride.seats - ride.riderIds.size()));
 
         String s = ride.departureDate;
         Date d = new Date( ((long) Double.parseDouble(s)) * 1000);

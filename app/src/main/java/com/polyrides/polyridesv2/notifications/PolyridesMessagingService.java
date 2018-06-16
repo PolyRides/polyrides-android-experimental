@@ -14,12 +14,11 @@ public class PolyridesMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // ...
 
-        Map<String,String> data = remoteMessage.getData();
-    Map<String, String> dnn = data;
+    Map<String,String> data = remoteMessage.getData();
 
     Intent intent = new Intent(this, AppMain.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-    String uid = "";
+    String uid;
     if (data.containsKey("offerUid")) {
         uid = data.get("offerUid");
         intent.putExtra("offerUid", uid);
@@ -31,8 +30,6 @@ public class PolyridesMessagingService extends FirebaseMessagingService {
 
     startActivity(intent);
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
 
